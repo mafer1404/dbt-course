@@ -1,0 +1,83 @@
+# =========================
+# macOS system files
+# =========================
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+
+# =========================
+# VS Code
+# =========================
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# Uncomment if you want to ignore ALL VSCode settings
+# .vscode/
+
+# =========================
+# dbt specific
+# =========================
+
+# Compiled SQL + artifacts
+target/
+dbt_packages/
+
+# Logs
+logs/
+*.log
+
+# dbt local profiles (contains credentials!)
+profiles.yml
+
+# dbt partial parsing cache
+.partial_parse.msgpack
+
+# =========================
+# Environment variables
+# =========================
+.env
+.env.*
+
+# =========================
+# Python environments (dbt runs on Python)
+# =========================
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# =========================
+# Dependency / package files
+# =========================
+pip-wheel-metadata/
+
+# =========================
+# Temporary files
+# =========================
+tmp/
+temp/
+*.tmp
+*.swp
+*.swo
+
+# =========================
+# Build / coverage
+# =========================
+coverage/
+htmlcov/
+
+# =========================
+# Misc
+# =========================
+*.bak
+*.orig
