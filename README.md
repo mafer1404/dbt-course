@@ -1,11 +1,61 @@
-This is a Student Repository for the Udemy's Complete dbt Bootcamp. You can:
+# dbt Course - Airbnb Analytics
 
-1) Either start a codespace and start using dbt right away
-2) Or clone this repo with Visual Studio Code and follow the instructions to set up a local dbt environment.
+A dbt project built on Snowflake that models Airbnb listing, host, and review data. Developed as part of the Udemy Complete dbt Bootcamp.
 
-Codespace setup:
-<img width="930" height="435" alt="image" src="https://github.com/user-attachments/assets/d7e15ad5-6df6-4651-895a-ea382c4da79c" />
+## Project Structure
 
-_Note: You don't need to create/activate a virtualenv in the Codespace. Everything has been set up for you._
+```
+dbt/
+  airbnb/           # Main dbt project
+    models/
+      src/          # Ephemeral staging models (source transformations)
+      dim/          # Dimension tables (hosts, listings, full moon dates)
+      fct/          # Fact tables (reviews)
+      mart/         # Mart layer (business-facing aggregations)
+    macros/         # Custom macros (schema generation, logging, tests)
+    seeds/          # Static CSV data (full moon dates)
+    snapshots/      # SCD Type 2 snapshots (hosts, listings)
+    tests/          # Custom data tests
+    analyses/       # Ad-hoc analytical queries
+```
 
-Have fun! :)  
+## Tech Stack
+
+- **dbt Core** 1.11
+- **Snowflake** (adapter: snowflake 1.11.6)
+- **Packages:** dbt_utils, dbt_expectations
+
+## Environments
+
+| Target | Schema | Purpose |
+|--------|--------|---------|
+| dev | `DBT_<user>` | Local development |
+| prod | `DBT_MYDEV` | Production build |
+
+All credentials are managed via environment variables (no secrets in repo).
+
+## Quick Start
+
+```bash
+# Activate virtual environment
+source dbt-core/bin/activate
+
+# Install dbt packages
+dbt deps
+
+# Run dev build
+dbt build
+
+# Run prod build
+dbt build --target prod --profiles-dir=_prod_profiles
+```
+
+## Key Features
+
+- **Incremental models** with microbatch strategy (fct_reviews, mart_fullmoon_reviews)
+- **SCD Type 2 snapshots** for hosts and listings history
+- **Data quality tests** using dbt_expectations (regex, distinct counts, quantiles)
+- **Custom generic tests** (minimum row count, positive values)
+- **Audit logging** via on-run-start hook and post-hook
+- **Role-based grants** (transform, reporter)
+- **Unit tests** for mart logic
