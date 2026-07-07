@@ -1,0 +1,14 @@
+exposures:
+  - name: executive_dashboard
+    label: Executive Dashboard
+    type: dashboard
+    maturity: low
+    url: https://a99e1c8b.us2a.app.preset.io/superset/dashboard/p/OrQ7WlN1NeV/
+    description: "This dashboard provides an overview of key metrics related to Airbnb listings and reviews, including average ratings, booking trends, and host performance. It is designed for executives to quickly assess the health of the Airbnb business and make informed decisions."
+    depends_on:
+      - ref('dim_listings_w_hosts')
+      - ref('mart_fullmoon_reviews')
+
+    owner:
+      name: Maffiiee
+      email: maria.herreragutierrez@ucr.ac.cr

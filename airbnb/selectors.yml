@@ -1,0 +1,10 @@
+selectors:
+  - name: dim_except_listings_w_hosts
+    description: "Select all models in the dim_except_listings_w_hosts directory, excluding the dim_except_listings_w_hosts model itself."
+    definition:
+      union:
+        - method: path
+          value: models/dim
+        - exclude: 
+          - method: fqn
+            value: dim_except_listings_w_hosts

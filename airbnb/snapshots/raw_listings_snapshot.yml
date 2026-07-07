@@ -1,0 +1,13 @@
+snapshots:
+    - name: scd_raw_listings
+      relation: source('airbnb', 'listings')
+      config: 
+        unique_key: id 
+        updated_at: updated_at
+        strategy: timestamp
+        hard_deletes: invalidate
+        # hard deletes: when a record is deleted, we wanto to take a look at the snapshot records and update the end column to see that the life cycle of the column has been completed.
+        # you can also create a macro to implement how the checks would be executed
+        # dbt snapshot
+
+        # dbt build to execute seed, run, snapshots and tests

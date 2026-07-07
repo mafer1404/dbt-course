@@ -1,0 +1,140 @@
+# dbt test and dbt test -x
+
+# dbt test --select dim_listings_w_hosts 
+models:
+  - name: dim_listings_cleansed
+    description: Cleansed table which contains Airbnb listings.
+    data_tests:
+      - minimum_row_count:
+          arguments:
+            min_row_count: 1000
+          #severity: warn
+    columns:
+      - name: listing_id
+        description: Primary key for the listing
+        data_tests:
+          - unique
+          - not_null
+
+      - name: host_id
+        description: The hosts's id. References the host table.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_hosts_cleansed')
+                field: host_id
+
+      - name: room_type
+        description: Type of the apartment / room
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Entire home/apt',
+                          'Private room',
+                          'Shared room',
+                          'Hotel room']
+
+      - name: minimum_nights
+        description: '{{ doc("dim_listing_cleansed__minimum_nights") }}'
+        data_tests:
+          - positive_values
+
+  - name: dim_hosts_cleansed
+    versions:
+      - v: 1
+        defined_in: dim_hosts_cleansed
+        deprecation_date: 2030-01-01
+      - v: 2
+        columns:
+          - include: '*'
+            exclude: [host_name]
+          - name: host_name
+            description: The name of the host (N/A if not available)
+            data_type: string
+            constraints:
+              - type: not_null
+    latest_version: 2
+    description: Cleansed table which contains Airbnb hosts.
+    config:
+      contract:
+        enforced: true
+   
+    columns:
+      - name: host_id
+        description: Primary key for the host.
+        data_type: integer
+        constraints:
+          - type: not_null
+        data_tests:
+          - unique
+        #   - not_null
+
+      - name: host_name
+        description: The name of the host.
+        data_type: string
+        constraints:
+          - type: not_null
+        # data_tests: 
+        #   - not_null
+
+      - name: is_superhost
+        description: Whether the host is a superhost or not.
+        data_type: string
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['t', 'f']
+
+      - name: updated_at
+        description: The timestamp when the host information was last updated.
+        data_type: timestamp
+
+      - name: created_at
+        description: The timestamp when the host information was created.
+        data_type: timestamp
+
+  - name: dim_listings_w_hosts
+    tests:
+      # comparing row counts between the dim_listings_w_hosts model and the source listings table to ensure that the number of rows in the model matches the number of rows in the source table. This test helps to validate that the data transformation and cleansing process has not resulted in any loss of data.
+      - dbt_expectations.expect_table_row_count_to_equal_other_table:
+          arguments:
+            compare_model: source('airbnb', 'listings')
+    columns:
+      - name: price
+        tests:
+          # looking for outliers in the price column, we can use the 99th percentile as a threshold. Any value above this threshold can be considered an outlier and may require further investigation.
+          - dbt_expectations.expect_column_quantile_values_to_be_between:
+              arguments:
+                quantile: .99
+                min_value: 50
+                max_value: 500 
+          # test warning if the maximum value in the price column exceeds 5000. This test helps to identify any extreme outliers that may indicate data quality issues or anomalies in the dataset.
+          - dbt_expectations.expect_column_max_to_be_between:       
+              arguments:
+                 max_value: 5000
+                 config:
+                    severity: warn
+          # test to ensure that the price column is of type number. This test helps to validate that the data type of the price column is consistent with the expected data type and can help prevent errors in downstream analysis or reporting.
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              arguments:
+                column_type: number
+
+  - name: fct_reviews
+    columns:
+      - name: listing_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_listings_cleansed')
+                field: listing_id
+
+      - name: reviewer_name
+        data_tests:
+          - not_null
+
+      - name: review_sentiment
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['positive', 'neutral', 'negative']

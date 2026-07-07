@@ -1,0 +1,40 @@
+version: 2
+
+# dbt test --select source:airbnb.listings
+
+# Aliases to actual tables in Snowflake
+
+# Extra abstraction on top of row layer, so i can reference my row tables as source tables
+sources:
+  - name: airbnb
+    schema: raw 
+    tables:
+      - name: listings
+        identifier: raw_listings
+        columns:
+          - name: room_type
+            # To check if the format of the source is fresh
+            tests:
+              - dbt_expectations.expect_column_distinct_count_to_equal:
+                  arguments:
+                    value: 4
+          - name: price
+            tests:
+              - dbt_expectations.expect_column_values_to_match_regex:
+                  arguments:
+                    # four backslashes are needed to escape the regex in YAML
+                    regex: "^\\\\$[0-9][0-9\\\\.]+$"
+      - name: hosts
+        identifier: raw_hosts
+
+      - name: reviews
+        identifier: raw_reviews
+        # To check if the format of the source is fresh 
+        # We define the column date as loaded_at_field to check:
+          # How old the most recent dare record in that column is
+        # run dbt source freshness
+        config:
+          loaded_at_field: date # name of the column
+          freshness: 
+            warn_after: {count: 1, period: hour} # code: 0
+            error_after: {count: 24, period: hour} # code: 1
