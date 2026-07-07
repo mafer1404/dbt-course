@@ -51,16 +51,18 @@ profiles.yml
 .venv/
 venv/
 env/
+dbt-core/
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+set-env.sh
 
 # =========================
 # Dependency / package files
 # =========================
 pip-wheel-metadata/
-
+.python-version
 # =========================
 # Temporary files
 # =========================
@@ -75,6 +77,12 @@ temp/
 # =========================
 coverage/
 htmlcov/
+.devcontainer/
+# =========================
+# dbt user/local files
+# =========================
+.user.yml
+package-lock.yml
 
 # =========================
 # Misc
