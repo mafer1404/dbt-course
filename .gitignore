@@ -35,6 +35,7 @@ logs/
 
 # dbt local profiles (contains credentials!)
 profiles.yml
+!**/_prod_profiles/profiles.yml
 
 # dbt partial parsing cache
 .partial_parse.msgpack
