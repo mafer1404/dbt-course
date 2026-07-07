@@ -33,7 +33,8 @@ jobs:
           SANITIZED=$(echo "$NAME" | tr '/' '_' | tr '-' '_' | tr '[:lower:]' '[:upper:]')
           echo "DBT_ENV_NAME=$SANITIZED" >> "$GITHUB_ENV"
           echo "PR will build into schema: DBT_$SANITIZED"
-      - run: cd airbnb && uv run dbt deps --profiles-dir _prod_profiles --target dev
+      - run: uv run dbt deps --profiles-dir _prod_profiles --target dev
+        working-directory: airbnb
       - name: Download latest prod-target artifact from main
         uses: dawidd6/action-download-artifact@v21
         with:
@@ -43,7 +44,7 @@ jobs:
           path: airbnb/prod-target
           if_no_artifact_found: fail
       - name: dbt build (slim CI if manifest available, else full)
+        working-directory: airbnb
         run: |
-          cd airbnb
           uv run dbt build --profiles-dir _prod_profiles --target dev \
             --select state:modified+ --defer --state ./prod-target
