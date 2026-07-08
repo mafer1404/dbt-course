@@ -90,3 +90,5 @@ package-lock.yml
 # =========================
 *.bak
 *.orig
+# dbt concurrent lock file
+package-lock.concurrent-update-lock
